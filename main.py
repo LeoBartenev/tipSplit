@@ -14,12 +14,14 @@ if "workerInstances" not in st.session_state:
 if "money" not in st.session_state:
     st.session_state.money = [{}]
 
-
-if "count" not in st.session_state:
-    st.session_state.count = 0
-
 if "lastAdded" not in st.session_state:
     st.session_state.lastAdded = ""
+
+if "workerFilledFlag" not in st.session_state:
+    st.session_state.workerFilledFlag = False
+
+if "moneyFilledFlag" not in st.session_state:
+    st.session_state.moneyFilledFlag = False
 
 total = 0
 class Worker:
@@ -66,11 +68,10 @@ with st.form("my_form", clear_on_submit=True):
     submitted = st.form_submit_button("Add to list")
     if submitted:
         st.write( name_input, "added.")
-        worker = f"instance_{st.session_state.count}"
         st.session_state.previousInstances.append(name_input)
         instances.append(Worker(name_input, hours_input, 1))
         st.session_state.instances.append({"name": name_input, "hours": hours_input})
-        st.session_state.count += 1
+        st.session_state.workerFilledFlag = True
 
 with st.form("remover tool", clear_on_submit=True):
     st.write("Fill this form to remove a worker from the list")
@@ -121,7 +122,6 @@ with st.form("my_form2"):
     # Every form must have a submit button.
     submitted = st.form_submit_button("Update")
     if submitted:
-        st.write( name_input, "added.")
         #if empty string, return 0
         if fifty_input == "": fifty_input = 0
         if twenty_input == "": twenty_input = 0
@@ -146,7 +146,7 @@ with st.form("my_form2"):
                  st.session_state.money[0].get("0.50") * 0.5 +
                  st.session_state.money[0].get("0.20") * 0.2)
         st.write(f"total is {total}")
-
+        st.session_state.moneyFilledFlag = True
 
 dfMoney = pd.DataFrame(
    st.session_state.money
@@ -162,116 +162,119 @@ def sortBiggerFirst(listOfWorkers):
     return sorted(listOfWorkers, key=lambda worker: worker.leftToPay, reverse=True)
 
 def splitTips():
-    # create the tip pool
-    twentyP = Tender(st.session_state.money[0].get("0.20"), 0.2, 7)
-    fiftyP = Tender(st.session_state.money[0].get("0.50"), 0.5, 6)
-    pound = Tender(st.session_state.money[0].get("1"), 1, 5)
-    twoPound = Tender(st.session_state.money[0].get("2"), 2, 4)
-    fivePound = Tender(st.session_state.money[0].get("5"), 5, 3)
-    tenPound = Tender(st.session_state.money[0].get("10"), 10, 2)
-    twentyPound = Tender(st.session_state.money[0].get("20"), 20, 1)
-    fiftyPound = Tender(st.session_state.money[0].get("50"), 50, 0)
+    if st.session_state.moneyFilledFlag and st.session_state.workerFilledFlag:
+        # create the tip pool
+        twentyP = Tender(st.session_state.money[0].get("0.20"), 0.2, 7)
+        fiftyP = Tender(st.session_state.money[0].get("0.50"), 0.5, 6)
+        pound = Tender(st.session_state.money[0].get("1"), 1, 5)
+        twoPound = Tender(st.session_state.money[0].get("2"), 2, 4)
+        fivePound = Tender(st.session_state.money[0].get("5"), 5, 3)
+        tenPound = Tender(st.session_state.money[0].get("10"), 10, 2)
+        twentyPound = Tender(st.session_state.money[0].get("20"), 20, 1)
+        fiftyPound = Tender(st.session_state.money[0].get("50"), 50, 0)
 
-    cashList = [fiftyPound, twentyPound, tenPound, fivePound, twoPound, pound, fiftyP, twentyP]
+        cashList = [fiftyPound, twentyPound, tenPound, fivePound, twoPound, pound, fiftyP, twentyP]
 
-     # believe it or not, this loops through the statesessions worker values
-    # to create workers objects
-    instances = {}
-    listOfValues = []
+         # believe it or not, this loops through the statesessions worker values
+        # to create workers objects
+        instances = {}
+        listOfValues = []
 
-    for entry in st.session_state.instances:
-        name = entry.get("name")
-        hours = float(entry.get("hours"))
-        instances[name] = Worker(name, hours, 1)
-
-
-
-    listOfWorkers = Worker.instances
-
-    totalTips = 0
-    for tender in cashList:
-        totalTips += tender.value * tender.quantity
-    totalLeftToPay = totalTips
-    st.write(f'totaltips is {totalTips}')
-
-    totalHours = 0
-    for worker in listOfWorkers:
-        totalHours += int(worker.hours) * worker.rate
-    st.write(f'total full rate hour is {totalHours}')
-
-    for worker in listOfWorkers:
-        worker.ratioOfTotalTip = worker.hours * worker.rate / totalHours
-        worker.totalTip = totalTips * worker.ratioOfTotalTip
-        worker.leftToPay = worker.totalTip
+        for entry in st.session_state.instances:
+            name = entry.get("name")
+            hours = float(entry.get("hours"))
+            instances[name] = Worker(name, hours, 1)
 
 
-    sortedList = sorted(listOfWorkers, key=lambda worker: worker.totalTip, reverse=True)
-    totalWorkers = len(sortedList)
 
-    for tender in cashList:
-        while (tender.quantity > 0):
-            tempListOfWorkers = sortBiggerFirst(listOfWorkers)
-            for worker in tempListOfWorkers:
-                if worker.leftToPay >= tender.value:
-                    worker.breakdown[tender.indexForBreakdown] += 1
-                    worker.leftToPay -= tender.value
-                    tender.quantity -= 1
-                    # print(
-                    #    f'left to pay for {worker.name} is {worker.leftToPay} breakdown is {worker.breakdown} current tender is {tender.value}')
-                    if tender.quantity == 0:
+        listOfWorkers = Worker.instances
+
+        totalTips = 0
+        for tender in cashList:
+            totalTips += tender.value * tender.quantity
+        totalLeftToPay = totalTips
+        st.write(f'totaltips is {totalTips}')
+
+        totalHours = 0
+        for worker in listOfWorkers:
+            totalHours += int(worker.hours) * worker.rate
+        st.write(f'total full rate hour is {totalHours}')
+
+        for worker in listOfWorkers:
+            worker.ratioOfTotalTip = worker.hours * worker.rate / totalHours
+            worker.totalTip = totalTips * worker.ratioOfTotalTip
+            worker.leftToPay = worker.totalTip
+
+
+        sortedList = sorted(listOfWorkers, key=lambda worker: worker.totalTip, reverse=True)
+        totalWorkers = len(sortedList)
+
+        for tender in cashList:
+            while (tender.quantity > 0):
+                tempListOfWorkers = sortBiggerFirst(listOfWorkers)
+                for worker in tempListOfWorkers:
+                    if worker.leftToPay >= tender.value:
+                        worker.breakdown[tender.indexForBreakdown] += 1
+                        worker.leftToPay -= tender.value
+                        tender.quantity -= 1
+                        # print(
+                        #    f'left to pay for {worker.name} is {worker.leftToPay} breakdown is {worker.breakdown} current tender is {tender.value}')
+                        if tender.quantity == 0:
+                            break
+                    else:
                         break
-                else:
+
+                if (tender.value < 1) & (tempListOfWorkers[0].leftToPay < 1):
+                    break
+                if (tender.value > tempListOfWorkers[0].leftToPay):
                     break
 
-            if (tender.value < 1) & (tempListOfWorkers[0].leftToPay < 1):
-                break
-            if (tender.value > tempListOfWorkers[0].leftToPay):
-                break
+        for worker in listOfWorkers:
+            totalWorkerTip = 0
+            index = 0
+            for tender in worker.breakdown:
+                totalWorkerTip += tender * cashList[index].value
+                index += 1
+            worker.tipsPaid = totalWorkerTip
 
-    for worker in listOfWorkers:
-        totalWorkerTip = 0
-        index = 0
-        for tender in worker.breakdown:
-            totalWorkerTip += tender * cashList[index].value
-            index += 1
-        worker.tipsPaid = totalWorkerTip
+        for instances in Worker.instances:
+            whiteSpace = 20 - len(instances.name)
 
-    for instances in Worker.instances:
-        whiteSpace = 20 - len(instances.name)
+        doubleCheckTotal = 0
+        paidTips = 0
 
-    doubleCheckTotal = 0
-    paidTips = 0
+        for worker in Worker.instances:
+            doubleCheckTotal += worker.totalTip
+            paidTips += worker.totalTip - worker.leftToPay
 
-    for worker in Worker.instances:
-        doubleCheckTotal += worker.totalTip
-        paidTips += worker.totalTip - worker.leftToPay
+        st.write(f'\nsum of all owed tips is {totalTips}')
+        st.write(f'sum of all total tips by instance is {doubleCheckTotal}')
+        st.write(f'sum of all paid tips is {paidTips}')
 
-    st.write(f'\nsum of all owed tips is {totalTips}')
-    st.write(f'sum of all total tips by instance is {doubleCheckTotal}')
-    st.write(f'sum of all paid tips is {paidTips}')
+        tipBoardData = []
+        for instance in Worker.instances:
+            tipBoardData.append({
+                "name" : instance.name,
+                "50" : instance.breakdown[0],
+                "20" : instance.breakdown[1],
+                "10" : instance.breakdown[2],
+                "5" : instance.breakdown[3],
+                "2" : instance.breakdown[4],
+                "1" : instance.breakdown[5],
+                "0.5" : instance.breakdown[6],
+                "0.2" : instance.breakdown[7],
+                "owed" : round(instance.totalTip,2),
+                "paid" : instance.tipsPaid,
+                "hours" : instance.hours,
+                "% of tips" : (instance.ratioOfTotalTip * 100),
 
-    tipBoardData = []
-    for instance in Worker.instances:
-        tipBoardData.append({
-            "name" : instance.name,
-            "50" : instance.breakdown[0],
-            "20" : instance.breakdown[1],
-            "10" : instance.breakdown[2],
-            "5" : instance.breakdown[3],
-            "2" : instance.breakdown[4],
-            "1" : instance.breakdown[5],
-            "0.5" : instance.breakdown[6],
-            "0.2" : instance.breakdown[7],
-            "owed" : round(instance.totalTip,2),
-            "paid" : instance.tipsPaid,
-            "hours" : instance.hours,
-            "% of tips" : (instance.ratioOfTotalTip * 100),
+            })
 
-        })
-
-    TPD = pd.DataFrame(
-        tipBoardData
-    )
-    st.dataframe(TPD, use_container_width=True)
+        TPD = pd.DataFrame(
+            tipBoardData
+        )
+        st.dataframe(TPD, use_container_width=True)
+    else:
+        st.write("fill all the forms first you naughty sausage!")
 if st.button("DO IT"):
     splitTips()
