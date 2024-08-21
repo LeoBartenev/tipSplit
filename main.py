@@ -59,6 +59,30 @@ st.write("let's get rich. Fast.")
 
 formCount = 1
 instances = []
+
+with st.expander("How to use this app"):
+    st.write('''
+        First form has to be filled with a unique worker's name, and the number of hour worked. When you press 
+        "Add to list" you will see what you added in the table below.
+    ''')
+    st.write('''
+            The Second form lets you remove a worker from the table. Just enter the worker's name, and press 
+            "remove". Below the table, you also have a button that removes the last entered entry, and 
+            one that resets the whole thing.
+        ''')
+    st.write('''
+        The last form gathers the number of coins and bills that have to be added to the tip pool. 
+        For each respective value, enter how many bills/coins of the respective value you collected. 
+        Press update, and you'll see under the form a table with all of it.
+    ''')
+    st.write('''
+        When you added all workers, and the money that has to be shared, press "DO IT", and the app will 
+        display how to split the tips. The last table will appear, each line representing a 
+        worker, and how many bills/coins it's owed.''')
+    st.write('''
+    Lastly, if you're nice and fill everything as intended, it works lmao, but if for some reason 
+    you broke the app, on the top right of your screen, you can tap on the three dot and rerun. Refresh the
+    whole thing if it's not enough. Or just count like a caveman.''')
 with st.form("my_form", clear_on_submit=True):
     st.write("Fill this form for each worker")
     name_input = st.text_input(label="Worker's name:")
@@ -67,11 +91,14 @@ with st.form("my_form", clear_on_submit=True):
     # Every form must have a submit button.
     submitted = st.form_submit_button("Add to list")
     if submitted:
-        st.write( name_input, "added.")
-        st.session_state.previousInstances.append(name_input)
-        instances.append(Worker(name_input, hours_input, 1))
-        st.session_state.instances.append({"name": name_input, "hours": hours_input})
-        st.session_state.workerFilledFlag = True
+        if (isinstance(name_input, str)) and (isinstance(int(hours_input), int)):
+            st.write( name_input, "added.")
+            st.session_state.previousInstances.append(name_input)
+            instances.append(Worker(name_input, hours_input, 1))
+            st.session_state.instances.append({"name": name_input, "hours": hours_input})
+            st.session_state.workerFilledFlag = True
+        else:
+            st.write("Looks like the form isn't properly filled.")
 
 with st.form("remover tool", clear_on_submit=True):
     st.write("Fill this form to remove a worker from the list")
@@ -90,7 +117,7 @@ with st.form("remover tool", clear_on_submit=True):
             st.write(name_input, " is not in the list")
 
 
-
+st.write("You can see the workers you added here.")
 df = pd.DataFrame(
    st.session_state.instances
 )
@@ -102,19 +129,20 @@ if st.button("remove last"):
     st.rerun()
 if st.button("reset form"):
     st.session_state.instances = []
+    st.session_state.previousInstances = []
     st.rerun()
 
 
 with st.form("my_form2"):
     st.write("Fill this form with the collected tips")
-    fifty_input = st.text_input(label="50:", value=0)
-    twenty_input = st.text_input(label='20:', value=0)
-    ten_input = st.text_input(label="10:", value=0)
-    five_input = st.text_input(label='5:', value=0)
-    two_input = st.text_input(label='2:', value=0)
-    one_input = st.text_input(label='1:', value=0)
-    fiftyP_input = st.text_input(label='0.50:', value=0)
-    twentyP_input = st.text_input(label='0.20:', value=0)
+    fifty_input = st.text_input(label="Number of 50 notes:", value=0)
+    twenty_input = st.text_input(label='Number of 20 notes:', value=0)
+    ten_input = st.text_input(label="Number of 10 notes:", value=0)
+    five_input = st.text_input(label='Number of 5 notes:', value=0)
+    two_input = st.text_input(label='Number of 2 coins:', value=0)
+    one_input = st.text_input(label='Number of 1 coins:', value=0)
+    fiftyP_input = st.text_input(label='Number of 0.50 coins:', value=0)
+    twentyP_input = st.text_input(label='Number of 0.20 coins:', value=0)
 
 
 
