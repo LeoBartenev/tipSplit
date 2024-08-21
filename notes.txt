@@ -1,0 +1,5 @@
+>>> instances = {}
+>>> for i in range(5):
+...     instance_name = f"instance_{i}"
+...     instances[instance_name] = Test(instance_name)
+ pour initialiser depuis un dic
