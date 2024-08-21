@@ -52,7 +52,7 @@ class Tender:
 
 
 
-st.title('Welcome to Tipslit')
+st.title('Welcome to TipSplit')
 st.write("let's get rich. Fast.")
 
 formCount = 1
