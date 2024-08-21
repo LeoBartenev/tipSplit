@@ -79,9 +79,15 @@ with st.form("remover tool", clear_on_submit=True):
     # Every form must have a submit button.
     submitted = st.form_submit_button("remove")
     if submitted:
-        st.write(name_input, "removed")
-        st.session_state.instances = [instance for instance in st.session_state.instances
-                                      if not (instance.get("name") == name_input)]
+        if name_input in st.session_state.previousInstances:
+            st.write(name_input, "removed")
+            st.session_state.instances = [instance for instance in st.session_state.instances
+                                          if not (instance.get("name") == name_input)]
+            st.session_state.previousInstances.remove(name_input)
+            st.rerun()
+        else:
+            st.write(name_input, " is not in the list")
+
 
 
 df = pd.DataFrame(
@@ -131,7 +137,14 @@ with st.form("my_form2"):
             "10": int(ten_input), "5": int(five_input),
             "1": int(one_input), "2": int(two_input),
             "0.50": int(fiftyP_input), "0.20": int(twentyP_input)}
-        total = (st.session_state.money[0].get("50") * 50 +
+
+
+dfMoney = pd.DataFrame(
+   st.session_state.money
+)
+st.dataframe(dfMoney, use_container_width=True)
+
+total = (st.session_state.money[0].get("50") * 50 +
                  st.session_state.money[0].get("20") * 20 +
                  st.session_state.money[0].get("10") * 10 +
                  st.session_state.money[0].get("5") * 5 +
@@ -139,19 +152,10 @@ with st.form("my_form2"):
                  st.session_state.money[0].get("1") * 1 +
                  st.session_state.money[0].get("0.50") * 0.5 +
                  st.session_state.money[0].get("0.20") * 0.2)
-
-dfMoney = pd.DataFrame(
-   st.session_state.money
-)
-st.dataframe(dfMoney, use_container_width=True)
-
-
 st.write(f"total is {total}")
 
 
 
-st.write(st.session_state.money)
-st.write(st.session_state.instances)
 
 def sortBiggerFirst(listOfWorkers):
     return sorted(listOfWorkers, key=lambda worker: worker.leftToPay, reverse=True)
@@ -198,22 +202,12 @@ def splitTips():
         worker.ratioOfTotalTip = worker.hours * worker.rate / totalHours
         worker.totalTip = totalTips * worker.ratioOfTotalTip
         worker.leftToPay = worker.totalTip
-        st.write(
-            f'{worker.name} percent of total tip is {worker.ratioOfTotalTip * 100}%, its totalTip is {worker.totalTip}')
 
-    st.write(f'total hours is {totalHours}, total tips is {totalTips}')
-
-    test = 0
-    for worker in listOfWorkers:
-        test += worker.totalTip
-
-    st.write(f'total of all worker tips is {test}')
 
     sortedList = sorted(listOfWorkers, key=lambda worker: worker.totalTip, reverse=True)
     totalWorkers = len(sortedList)
 
     for tender in cashList:
-        st.write(f'there is {tender.quantity} units of {tender.value} value')
         while (tender.quantity > 0):
             tempListOfWorkers = sortBiggerFirst(listOfWorkers)
             for worker in tempListOfWorkers:
@@ -234,23 +228,15 @@ def splitTips():
                 break
 
     for worker in listOfWorkers:
-        st.write(f'\nWorker {worker.name} is owed {worker.totalTip} by the pool')
         totalWorkerTip = 0
         index = 0
         for tender in worker.breakdown:
             totalWorkerTip += tender * cashList[index].value
             index += 1
-        st.write(f'its been awarded {totalWorkerTip}, with {worker.leftToPay} left')
         worker.tipsPaid = totalWorkerTip
-        for tender in cashList:
-            st.write(
-                f'Worker {worker.name} was awarded {worker.breakdown[cashList.index(tender)]} tenders of {tender.value} value')
-    st.write([tender.quantity for tender in cashList])
 
     for instances in Worker.instances:
         whiteSpace = 20 - len(instances.name)
-        st.write(
-            f'{whiteSpace * " "}{instances.name} is owed {round(instances.totalTip, 2)} pounds, and has been paid {instances.tipsPaid} bill breakdown is {instances.breakdown[0:4]}, coins is {instances.breakdown[4:]}')
 
     doubleCheckTotal = 0
     paidTips = 0
@@ -263,5 +249,28 @@ def splitTips():
     st.write(f'sum of all total tips by instance is {doubleCheckTotal}')
     st.write(f'sum of all paid tips is {paidTips}')
 
+    tipBoardData = []
+    for instance in Worker.instances:
+        tipBoardData.append({
+            "name" : instance.name,
+            "50" : instance.breakdown[0],
+            "20" : instance.breakdown[1],
+            "10" : instance.breakdown[2],
+            "5" : instance.breakdown[3],
+            "2" : instance.breakdown[4],
+            "1" : instance.breakdown[5],
+            "0.5" : instance.breakdown[6],
+            "0.2" : instance.breakdown[7],
+            "owed" : round(instance.totalTip,2),
+            "paid" : instance.tipsPaid,
+            "hours" : instance.hours,
+            "% of tips" : (instance.ratioOfTotalTip * 100),
+
+        })
+
+    TPD = pd.DataFrame(
+        tipBoardData
+    )
+    st.dataframe(TPD, use_container_width=True)
 if st.button("DO IT"):
     splitTips()
