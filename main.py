@@ -137,14 +137,7 @@ with st.form("my_form2"):
             "10": int(ten_input), "5": int(five_input),
             "1": int(one_input), "2": int(two_input),
             "0.50": int(fiftyP_input), "0.20": int(twentyP_input)}
-
-
-dfMoney = pd.DataFrame(
-   st.session_state.money
-)
-st.dataframe(dfMoney, use_container_width=True)
-
-total = (st.session_state.money[0].get("50") * 50 +
+        total = (st.session_state.money[0].get("50") * 50 +
                  st.session_state.money[0].get("20") * 20 +
                  st.session_state.money[0].get("10") * 10 +
                  st.session_state.money[0].get("5") * 5 +
@@ -152,7 +145,15 @@ total = (st.session_state.money[0].get("50") * 50 +
                  st.session_state.money[0].get("1") * 1 +
                  st.session_state.money[0].get("0.50") * 0.5 +
                  st.session_state.money[0].get("0.20") * 0.2)
-st.write(f"total is {total}")
+        st.write(f"total is {total}")
+
+
+dfMoney = pd.DataFrame(
+   st.session_state.money
+)
+st.dataframe(dfMoney, use_container_width=True)
+
+
 
 
 
