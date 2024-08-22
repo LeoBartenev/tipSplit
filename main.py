@@ -91,7 +91,7 @@ with st.form("my_form", clear_on_submit=True):
     # Every form must have a submit button.
     submitted = st.form_submit_button("Add to list")
     if submitted:
-        if (isinstance(name_input, str)) and (isinstance(int(hours_input), int)):
+        if (isinstance(name_input, str)) and (isinstance(float(hours_input), float)):
             st.write( name_input, "added.")
             st.session_state.previousInstances.append(name_input)
             instances.append(Worker(name_input, hours_input, 1))
