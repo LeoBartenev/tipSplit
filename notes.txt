@@ -3,3 +3,51 @@
 ...     instance_name = f"instance_{i}"
 ...     instances[instance_name] = Test(instance_name)
  pour initialiser depuis un dic
+
+ to beat is:
+
+              dipti is owed 16.04 pounds, and has been paid 14.6 bill breakdown is [0, 0, 1, 0], coins is [0, 3, 2, 3]
+              marija is owed 12.99 pounds, and has been paid 11.6 bill breakdown is [0, 0, 0, 1], coins is [1, 3, 2, 3]
+              bigboi is owed 16.04 pounds, and has been paid 14.6 bill breakdown is [0, 0, 1, 0], coins is [0, 3, 2, 3]
+               maria is owed 10.7 pounds, and has been paid 9.6 bill breakdown is [0, 0, 0, 1], coins is [0, 3, 2, 3]
+              gideon is owed 5.35 pounds, and has been paid 4.6 bill breakdown is [0, 0, 0, 0], coins is [0, 3, 2, 3]
+                seby is owed 2.67 pounds, and has been paid 2.5 bill breakdown is [0, 0, 0, 0], coins is [0, 2, 1, 0]
+             william is owed 17.19 pounds, and has been paid 16.6 bill breakdown is [0, 0, 1, 0], coins is [1, 3, 2, 3]
+            giovanii is owed 6.11 pounds, and has been paid 6.1 bill breakdown is [0, 0, 0, 0], coins is [1, 3, 1, 3]
+                fran is owed 14.71 pounds, and has been paid 11.8 bill breakdown is [0, 0, 0, 1], coins is [1, 3, 2, 4]
+            svetlana is owed 13.37 pounds, and has been paid 11.8 bill breakdown is [0, 0, 0, 1], coins is [1, 3, 2, 4]
+              martin is owed 15.66 pounds, and has been paid 14.6 bill breakdown is [0, 0, 1, 0], coins is [0, 3, 2, 3]
+                anna is owed 15.28 pounds, and has been paid 14.6 bill breakdown is [0, 0, 1, 0], coins is [0, 3, 2, 3]
+                 tim is owed 10.12 pounds, and has been paid 9.6 bill breakdown is [0, 0, 0, 1], coins is [0, 3, 2, 3]
+                phil is owed 14.51 pounds, and has been paid 11.8 bill breakdown is [0, 0, 0, 1], coins is [1, 3, 2, 4]
+             valeria is owed 18.91 pounds, and has been paid 18.9 bill breakdown is [0, 0, 1, 1], coins is [0, 3, 1, 2]
+                asia is owed 18.91 pounds, and has been paid 18.9 bill breakdown is [0, 0, 1, 1], coins is [0, 3, 1, 2]
+               tejas is owed 14.9 pounds, and has been paid 14.6 bill breakdown is [0, 0, 1, 0], coins is [0, 3, 2, 3]
+             melissa is owed 6.11 pounds, and has been paid 4.8 bill breakdown is [0, 0, 0, 0], coins is [0, 3, 2, 4]
+              edwina is owed 8.59 pounds, and has been paid 8.4 bill breakdown is [0, 0, 0, 1], coins is [0, 2, 2, 2]
+               savio is owed 8.59 pounds, and has been paid 8.1 bill breakdown is [0, 0, 0, 1], coins is [0, 2, 1, 3]
+               ahmet is owed 8.59 pounds, and has been paid 8.1 bill breakdown is [0, 0, 0, 1], coins is [0, 2, 1, 3]
+            ethiopia is owed 8.59 pounds, and has been paid 8.1 bill breakdown is [0, 0, 0, 1], coins is [0, 2, 1, 3]
+               chef1 is owed 11.46 pounds, and has been paid 11.1 bill breakdown is [0, 0, 0, 1], coins is [1, 3, 1, 3]
+
+sum of all owed tips is 275.4
+sum of all total tips by instance is 275.4
+sum of all paid tips is 255.39999999999998
+0.004713732996606268 seconds
+
+sum of all owed tips is 275.4
+sum of all total tips by instance is 275.4
+sum of all paid tips is 273.4
+
+can iterate over dataframe data like:
+
+>>> for i in a:
+...     print(i["name"] + " " + str(i["hours"]))
+...
+dipti 42
+marija 34
+bigboi 42
+maria 28
+gideon 14
+seby 7
+william 45
