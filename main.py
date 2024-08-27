@@ -51,7 +51,8 @@ class Tender:
 
 
 def update_worker_instances(data):
-    st.session_state.instances = data
+    st.session_state.instances = [worker for worker in data
+                                  if worker["name"] and worker["hours"]]
     st.session_state.workerFilledFlag = True
 
 
@@ -161,27 +162,27 @@ st.dataframe(st.session_state.instances, use_container_width=True)
 
 with st.form("my_form2"):
     st.write("Fill this form with the collected tips")
-    fifty_input = st.text_input(label="Number of 50 notes:", value=0)
-    twenty_input = st.text_input(label='Number of 20 notes:', value=0)
-    ten_input = st.text_input(label="Number of 10 notes:", value=0)
-    five_input = st.text_input(label='Number of 5 notes:', value=0)
-    two_input = st.text_input(label='Number of 2 coins:', value=0)
-    one_input = st.text_input(label='Number of 1 coins:', value=0)
-    fiftyP_input = st.text_input(label='Number of 0.50 coins:', value=0)
-    twentyP_input = st.text_input(label='Number of 0.20 coins:', value=0)
+    fifty_input = st.number_input(label="Number of 50 notes:", value=0, min_value=0)
+    twenty_input = st.number_input(label='Number of 20 notes:', value=0, min_value=0)
+    ten_input = st.number_input(label="Number of 10 notes:", value=0, min_value=0)
+    five_input = st.number_input(label='Number of 5 notes:', value=0, min_value=0)
+    two_input = st.number_input(label='Number of 2 coins:', value=0, min_value=0)
+    one_input = st.number_input(label='Number of 1 coins:', value=0, min_value=0)
+    fiftyP_input = st.number_input(label='Number of 0.50 coins:', value=0, min_value=0)
+    twentyP_input = st.number_input(label='Number of 0.20 coins:', value=0, min_value=0)
 
     # Every form must have a submit button.
     submitted = st.form_submit_button("Update")
     if submitted:
         # if empty string, return 0
-        if fifty_input == "": fifty_input = 0
-        if twenty_input == "": twenty_input = 0
-        if ten_input == "": ten_input = 0
-        if five_input == "": five_input = 0
-        if two_input == "": one_input = 0
-        if one_input == "": one_input = 0
-        if fiftyP_input == "": fiftyP_input = 0
-        if twentyP_input == "": twentyP_input = 0
+        #if fifty_input == "": fifty_input = 0
+        #if twenty_input == "": twenty_input = 0
+        #if ten_input == "": ten_input = 0
+        #if five_input == "": five_input = 0
+        #if two_input == "": one_input = 0
+        #if one_input == "": one_input = 0
+        #if fiftyP_input == "": fiftyP_input = 0
+        #if twentyP_input == "": twentyP_input = 0
 
         update_money_instance(fifty_input, twenty_input,
                               ten_input, five_input,
